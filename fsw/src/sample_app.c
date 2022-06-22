@@ -1,29 +1,25 @@
-/*******************************************************************************
-**
-**      GSC-18128-1, "Core Flight Executive Version 6.7"
-**
-**      Copyright (c) 2006-2019 United States Government as represented by
-**      the Administrator of the National Aeronautics and Space Administration.
-**      All Rights Reserved.
-**
-**      Licensed under the Apache License, Version 2.0 (the "License");
-**      you may not use this file except in compliance with the License.
-**      You may obtain a copy of the License at
-**
-**        http://www.apache.org/licenses/LICENSE-2.0
-**
-**      Unless required by applicable law or agreed to in writing, software
-**      distributed under the License is distributed on an "AS IS" BASIS,
-**      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-**      See the License for the specific language governing permissions and
-**      limitations under the License.
-**
-** File: sample_app.c
-**
-** Purpose:
-**   This file contains the source code for the Sample App.
-**
-*******************************************************************************/
+/************************************************************************
+ * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ *
+ * Copyright (c) 2020 United States Government as represented by the
+ * Administrator of the National Aeronautics and Space Administration.
+ * All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may
+ * not use this file except in compliance with the License. You may obtain
+ * a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ************************************************************************/
+
+/**
+ * \file
+ *   This file contains the source code for the Sample App.
+ */
 
 /*
 ** Include Files:
@@ -133,27 +129,9 @@ int32 SAMPLE_APP_Init(void)
     SAMPLE_APP_Data.PipeName[sizeof(SAMPLE_APP_Data.PipeName) - 1] = 0;
 
     /*
-    ** Initialize event filter table...
-    */
-    SAMPLE_APP_Data.EventFilters[0].EventID = SAMPLE_APP_STARTUP_INF_EID;
-    SAMPLE_APP_Data.EventFilters[0].Mask    = 0x0000;
-    SAMPLE_APP_Data.EventFilters[1].EventID = SAMPLE_APP_COMMAND_ERR_EID;
-    SAMPLE_APP_Data.EventFilters[1].Mask    = 0x0000;
-    SAMPLE_APP_Data.EventFilters[2].EventID = SAMPLE_APP_COMMANDNOP_INF_EID;
-    SAMPLE_APP_Data.EventFilters[2].Mask    = 0x0000;
-    SAMPLE_APP_Data.EventFilters[3].EventID = SAMPLE_APP_COMMANDRST_INF_EID;
-    SAMPLE_APP_Data.EventFilters[3].Mask    = 0x0000;
-    SAMPLE_APP_Data.EventFilters[4].EventID = SAMPLE_APP_INVALID_MSGID_ERR_EID;
-    SAMPLE_APP_Data.EventFilters[4].Mask    = 0x0000;
-    SAMPLE_APP_Data.EventFilters[5].EventID = SAMPLE_APP_LEN_ERR_EID;
-    SAMPLE_APP_Data.EventFilters[5].Mask    = 0x0000;
-    SAMPLE_APP_Data.EventFilters[6].EventID = SAMPLE_APP_PIPE_ERR_EID;
-    SAMPLE_APP_Data.EventFilters[6].Mask    = 0x0000;
-
-    /*
     ** Register the events
     */
-    status = CFE_EVS_Register(SAMPLE_APP_Data.EventFilters, SAMPLE_APP_EVENT_COUNTS, CFE_EVS_EventFilter_BINARY);
+    status = CFE_EVS_Register(NULL, 0, CFE_EVS_EventFilter_BINARY);
     if (status != CFE_SUCCESS)
     {
         CFE_ES_WriteToSysLog("Sample App: Error Registering Events, RC = 0x%08lX\n", (unsigned long)status);
@@ -163,7 +141,8 @@ int32 SAMPLE_APP_Init(void)
     /*
     ** Initialize housekeeping packet (clear user data area).
     */
-    CFE_MSG_Init(&SAMPLE_APP_Data.HkTlm.TlmHeader.Msg, SAMPLE_APP_HK_TLM_MID, sizeof(SAMPLE_APP_Data.HkTlm));
+    CFE_MSG_Init(CFE_MSG_PTR(SAMPLE_APP_Data.HkTlm.TelemetryHeader), CFE_SB_ValueToMsgId(SAMPLE_APP_HK_TLM_MID),
+                 sizeof(SAMPLE_APP_Data.HkTlm));
 
     /*
     ** Create Software Bus message pipe.
@@ -178,7 +157,7 @@ int32 SAMPLE_APP_Init(void)
     /*
     ** Subscribe to Housekeeping request commands
     */
-    status = CFE_SB_Subscribe(SAMPLE_APP_SEND_HK_MID, SAMPLE_APP_Data.CommandPipe);
+    status = CFE_SB_Subscribe(CFE_SB_ValueToMsgId(SAMPLE_APP_SEND_HK_MID), SAMPLE_APP_Data.CommandPipe);
     if (status != CFE_SUCCESS)
     {
         CFE_ES_WriteToSysLog("Sample App: Error Subscribing to HK request, RC = 0x%08lX\n", (unsigned long)status);
@@ -188,7 +167,7 @@ int32 SAMPLE_APP_Init(void)
     /*
     ** Subscribe to ground command packets
     */
-    status = CFE_SB_Subscribe(SAMPLE_APP_CMD_MID, SAMPLE_APP_Data.CommandPipe);
+    status = CFE_SB_Subscribe(CFE_SB_ValueToMsgId(SAMPLE_APP_CMD_MID), SAMPLE_APP_Data.CommandPipe);
     if (status != CFE_SUCCESS)
     {
         CFE_ES_WriteToSysLog("Sample App: Error Subscribing to Command, RC = 0x%08lX\n", (unsigned long)status);
@@ -233,7 +212,7 @@ void SAMPLE_APP_ProcessCommandPacket(CFE_SB_Buffer_t *SBBufPtr)
 
     CFE_MSG_GetMsgId(&SBBufPtr->Msg, &MsgId);
 
-    switch (MsgId)
+    switch (CFE_SB_MsgIdToValue(MsgId))
     {
         case SAMPLE_APP_CMD_MID:
             SAMPLE_APP_ProcessGroundCommand(SBBufPtr);
@@ -326,8 +305,8 @@ int32 SAMPLE_APP_ReportHousekeeping(const CFE_MSG_CommandHeader_t *Msg)
     /*
     ** Send housekeeping telemetry packet...
     */
-    CFE_SB_TimeStampMsg(&SAMPLE_APP_Data.HkTlm.TlmHeader.Msg);
-    CFE_SB_TransmitMsg(&SAMPLE_APP_Data.HkTlm.TlmHeader.Msg, true);
+    CFE_SB_TimeStampMsg(CFE_MSG_PTR(SAMPLE_APP_Data.HkTlm.TelemetryHeader));
+    CFE_SB_TransmitMsg(CFE_MSG_PTR(SAMPLE_APP_Data.HkTlm.TelemetryHeader), true);
 
     /*
     ** Manage any pending table loads, validations, etc.
