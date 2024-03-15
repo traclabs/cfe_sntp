@@ -21,7 +21,7 @@
  *
  *
  * Purpose:
- * Extra scaffolding functions for the sample_app unit test
+ * Extra scaffolding functions for the sntp unit test
  *
  * Notes:
  * This is an extra UT-specific extern declaration
@@ -32,19 +32,19 @@
  * order to exercise or set up for off-nominal cases.
  */
 
-#ifndef UT_SAMPLE_APP_H
-#define UT_SAMPLE_APP_H
+#ifndef UT_SNTP_H
+#define UT_SNTP_H
 
 /*
  * Necessary to include these here to get the definition of the
- * "SAMPLE_APP_Data_t" typedef.
+ * "SNTP_Data_t" typedef.
  */
-#include "sample_app_events.h"
-#include "sample_app.h"
+#include "sntp_events.h"
+#include "sntp.h"
 
 /*
- * Allow UT access to the global "SAMPLE_APP_Data" object.
+ * Allow UT access to the global "SNTP_Data" object.
  */
-extern SAMPLE_APP_Data_t SAMPLE_APP_Data;
+extern SNTP_Data_t SNTP_Data;
 
-#endif /* UT_SAMPLE_APP_H */
+#endif /* UT_SNTP_H */

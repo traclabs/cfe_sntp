@@ -19,20 +19,19 @@
 /**
  * @file
  *
- * Define sample app table
+ * Define SAMPLE App Events IDs
  */
 
-#ifndef SAMPLE_APP_TABLE_H
-#define SAMPLE_APP_TABLE_H
+#ifndef SNTP_EVENTS_H
+#define SNTP_EVENTS_H
 
-/*
-** Table structure
-*/
-typedef struct
-{
-    uint16 Int1;
-    uint16 Int2;
+#define SNTP_RESERVED_EID          0
+#define SNTP_STARTUP_INF_EID       1
+#define SNTP_COMMAND_ERR_EID       2
+#define SNTP_COMMANDNOP_INF_EID    3
+#define SNTP_COMMANDRST_INF_EID    4
+#define SNTP_INVALID_MSGID_ERR_EID 5
+#define SNTP_LEN_ERR_EID           6
+#define SNTP_PIPE_ERR_EID          7
 
-} SAMPLE_APP_Table_t;
-
-#endif /* SAMPLE_APP_TABLE_H */
+#endif /* SNTP_EVENTS_H */

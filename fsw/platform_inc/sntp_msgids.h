@@ -16,22 +16,14 @@
  * limitations under the License.
  ************************************************************************/
 
-/**
- * @file
- *
- * Define SAMPLE App Events IDs
- */
+#ifndef SNTP_MSGIDS_H
+#define SNTP_MSGIDS_H
 
-#ifndef SAMPLE_APP_EVENTS_H
-#define SAMPLE_APP_EVENTS_H
+#include "cfe_msgids.h"
 
-#define SAMPLE_APP_RESERVED_EID          0
-#define SAMPLE_APP_STARTUP_INF_EID       1
-#define SAMPLE_APP_COMMAND_ERR_EID       2
-#define SAMPLE_APP_COMMANDNOP_INF_EID    3
-#define SAMPLE_APP_COMMANDRST_INF_EID    4
-#define SAMPLE_APP_INVALID_MSGID_ERR_EID 5
-#define SAMPLE_APP_LEN_ERR_EID           6
-#define SAMPLE_APP_PIPE_ERR_EID          7
+#define SNTP_CMD_MID     (CFE_PLATFORM_CMD_MID_BASE + 0x30)
+#define SNTP_SEND_HK_MID (CFE_PLATFORM_CMD_MID_BASE + 0x31)
 
-#endif /* SAMPLE_APP_EVENTS_H */
+#define SNTP_HK_TLM_MID  (CFE_PLATFORM_TLM_MID_BASE + 0x30)
+
+#endif /* SNTP_MSGIDS_H */

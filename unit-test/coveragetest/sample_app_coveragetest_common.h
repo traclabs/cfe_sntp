@@ -19,11 +19,11 @@
 /**
  * @file
  *
- * Common definitions for all sample_app coverage tests
+ * Common definitions for all sntp coverage tests
  */
 
-#ifndef SAMPLE_APP_COVERAGETEST_COMMON_H
-#define SAMPLE_APP_COVERAGETEST_COMMON_H
+#ifndef SNTP_COVERAGETEST_COMMON_H
+#define SNTP_COVERAGETEST_COMMON_H
 
 /*
  * Includes
@@ -34,9 +34,9 @@
 #include "utstubs.h"
 
 #include "cfe.h"
-#include "sample_app_events.h"
-#include "sample_app.h"
-#include "sample_app_table.h"
+#include "sntp_events.h"
+#include "sntp.h"
+#include "sntp_table.h"
 
 /*
  * Macro to add a test case to the list of tests to execute
@@ -53,4 +53,4 @@ void Sample_UT_Setup(void);
  */
 void Sample_UT_TearDown(void);
 
-#endif /* SAMPLE_APP_COVERAGETEST_COMMON_H */
+#endif /* SNTP_COVERAGETEST_COMMON_H */

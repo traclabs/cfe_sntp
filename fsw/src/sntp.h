@@ -22,8 +22,8 @@
  * Main header file for the SAMPLE application
  */
 
-#ifndef SAMPLE_APP_H
-#define SAMPLE_APP_H
+#ifndef SNTP_H
+#define SNTP_H
 
 /*
 ** Required header files.
@@ -34,21 +34,21 @@
 #include "cfe_sb.h"
 #include "cfe_es.h"
 
-#include "sample_app_perfids.h"
-#include "sample_app_msgids.h"
-#include "sample_app_msg.h"
+#include "sntp_perfids.h"
+#include "sntp_msgids.h"
+#include "sntp_msg.h"
 
 /***********************************************************************/
-#define SAMPLE_APP_PIPE_DEPTH 32 /* Depth of the Command Pipe for Application */
+#define SNTP_PIPE_DEPTH 32 /* Depth of the Command Pipe for Application */
 
-#define SAMPLE_APP_NUMBER_OF_TABLES 1 /* Number of Table(s) */
+#define SNTP_NUMBER_OF_TABLES 1 /* Number of Table(s) */
 
 /* Define filenames of default data images for tables */
-#define SAMPLE_APP_TABLE_FILE "/cf/sample_app_tbl.tbl"
+#define SNTP_TABLE_FILE "/cf/sntp_tbl.tbl"
 
-#define SAMPLE_APP_TABLE_OUT_OF_RANGE_ERR_CODE -1
+#define SNTP_TABLE_OUT_OF_RANGE_ERR_CODE -1
 
-#define SAMPLE_APP_TBL_ELEMENT_1_MAX 10
+#define SNTP_TBL_ELEMENT_1_MAX 10
 /************************************************************************
 ** Type Definitions
 *************************************************************************/
@@ -67,7 +67,7 @@ typedef struct
     /*
     ** Housekeeping telemetry packet...
     */
-    SAMPLE_APP_HkTlm_t HkTlm;
+    SNTP_HkTlm_t HkTlm;
 
     /*
     ** Run Status variable used in the main processing loop
@@ -85,29 +85,31 @@ typedef struct
     char   PipeName[CFE_MISSION_MAX_API_LEN];
     uint16 PipeDepth;
 
-    CFE_TBL_Handle_t TblHandles[SAMPLE_APP_NUMBER_OF_TABLES];
+    //CFE_TBL_Handle_t TblHandles[SNTP_NUMBER_OF_TABLES];
 
-} SAMPLE_APP_Data_t;
+    int sockfd;
+
+} SNTP_Data_t;
 
 /****************************************************************************/
 /*
 ** Local function prototypes.
 **
-** Note: Except for the entry point (SAMPLE_APP_Main), these
+** Note: Except for the entry point (SNTP_Main), these
 **       functions are not called from any other source module.
 */
-void  SAMPLE_APP_Main(void);
-int32 SAMPLE_APP_Init(void);
-void  SAMPLE_APP_ProcessCommandPacket(CFE_SB_Buffer_t *SBBufPtr);
-void  SAMPLE_APP_ProcessGroundCommand(CFE_SB_Buffer_t *SBBufPtr);
-int32 SAMPLE_APP_ReportHousekeeping(const CFE_MSG_CommandHeader_t *Msg);
-int32 SAMPLE_APP_ResetCounters(const SAMPLE_APP_ResetCountersCmd_t *Msg);
-int32 SAMPLE_APP_Process(const SAMPLE_APP_ProcessCmd_t *Msg);
-int32 SAMPLE_APP_Noop(const SAMPLE_APP_NoopCmd_t *Msg);
-void  SAMPLE_APP_GetCrc(const char *TableName);
+void  SNTP_Main(void);
+int32 SNTP_Init(void);
+void  SNTP_ProcessCommandPacket(CFE_SB_Buffer_t *SBBufPtr);
+void  SNTP_ProcessGroundCommand(CFE_SB_Buffer_t *SBBufPtr);
+int32 SNTP_ReportHousekeeping(const CFE_MSG_CommandHeader_t *Msg);
+int32 SNTP_ResetCounters(const SNTP_ResetCountersCmd_t *Msg);
+int32 SNTP_Process(const SNTP_ProcessCmd_t *Msg);
+int32 SNTP_Noop(const SNTP_NoopCmd_t *Msg);
+void  SNTP_GetCrc(const char *TableName);
 
-int32 SAMPLE_APP_TblValidationFunc(void *TblData);
+int32 SNTP_TblValidationFunc(void *TblData);
 
-bool SAMPLE_APP_VerifyCmdLength(CFE_MSG_Message_t *MsgPtr, size_t ExpectedLength);
+bool SNTP_VerifyCmdLength(CFE_MSG_Message_t *MsgPtr, size_t ExpectedLength);
 
-#endif /* SAMPLE_APP_H */
+#endif /* SNTP_H */

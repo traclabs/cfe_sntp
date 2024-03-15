@@ -22,9 +22,9 @@
  * Define Sample App Performance IDs
  */
 
-#ifndef SAMPLE_APP_PERFIDS_H
-#define SAMPLE_APP_PERFIDS_H
+#ifndef SNTP_PERFIDS_H
+#define SNTP_PERFIDS_H
 
-#define SAMPLE_APP_PERF_ID 91
+#define SNTP_PERF_ID 93
 
-#endif /* SAMPLE_APP_PERFIDS_H */
+#endif /* SNTP_PERFIDS_H */

@@ -1,0 +1,3 @@
+[submodule "fsw/src/coreSNTP"]
+	path = fsw/src/coreSNTP
+	url = https://github.com/traclabs/coreSNTP.git
