@@ -41,8 +41,12 @@
 #include "core_sntp_config.h"
 #include "sntp_utils.h"
 
+#ifndef SNTP_PORT
 #define SNTP_PORT 123
+#endif
+#ifndef SNTP_STRATUM
 #define SNTP_STRATUM 15
+#endif
 
 /*
 ** global data

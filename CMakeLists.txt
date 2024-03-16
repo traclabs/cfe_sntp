@@ -8,6 +8,11 @@ include_directories(fsw/src)
 # Create the app module
 add_cfe_app(sntp fsw/src/sntp.c fsw/src/sntp_utils.c fsw/src/coreSNTP/source/core_sntp_serializer.c )
 
+option(sntp_use_cfe_time "Use CFE time for SNTP. If disabled, use system time." ON)
+if (sntp_use_cfe_time)
+  target_compile_definitions(sntp PUBLIC -DSNTP_USE_CFE_TIME)
+endif()
+
 # Include the public API from sample_lib to demonstrate how
 # to call library-provided functions
 #add_cfe_app_dependency(sntp sample_lib)
@@ -22,3 +27,7 @@ add_cfe_app(sntp fsw/src/sntp.c fsw/src/sntp_utils.c fsw/src/coreSNTP/source/cor
 if (ENABLE_UNIT_TESTS)
   add_subdirectory(unit-test)
 endif (ENABLE_UNIT_TESTS)
+
+# Tools folder defines standalone SNTP Client and Server executables to test independent of cFE
+# NOTE: tools directory must be compiled manually. cFE cmake configuration causes it to fail if invoked automatically
+#add_subdirectory(tools)

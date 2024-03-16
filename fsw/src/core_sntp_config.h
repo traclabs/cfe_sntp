@@ -56,7 +56,7 @@
 
 /* @[code_example_loggingmacros] */
 /************* Define Logging Macros using printf function ***********/
-#if 0 // TODO: Ifdef cfe
+#ifndef OSAL_API_VERSION // Use printf if not built with OSAL support
 #define PrintfError( ... )         printf( "Error: "__VA_ARGS__ );  printf( "\n" )
 #define PrintfWarn( ... )          printf( "Warn: "__VA_ARGS__ );  printf( "\n" )
 #define PrintfInfo( ... )          printf( "Info: " __VA_ARGS__ ); printf( "\n" )

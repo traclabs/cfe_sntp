@@ -37,8 +37,20 @@ const char* sntp_util_status_to_str(SntpStatus_t status) {
 
 
 /*** System Utility Functions - NOTICE: These functions may vary by target system and may be split into a discrete file later ***/
+#if defined(SNTP_USE_CFE_TIME)
+#include "cfe.h"
+
 void getCurrentSntpTime( SntpTimestamp_t *sntp ) {
-    // TODO
+    CFE_TIME_SysTime_t time = CFE_TIME_GetUTC();
+    sntp->seconds = time.Seconds + SNTP_TIME_AT_UNIX_EPOCH_SECS;
+
+    // TODO: VERIFY NTP and CFE subseconds are equivalent
+    //MILLISECONDS_TO_SNTP_FRACTIONS( CFE_TIME_Sub2MicroSecs(time->Subseconds) );
+    sntp->fractions = time.Subseconds;
+}
+#else
+
+void getCurrentSntpTime( SntpTimestamp_t *sntp ) {
     struct timespec currentTime;
     if (clock_gettime(CLOCK_REALTIME, &currentTime) == -1) {
         perror("Error getting current time");
@@ -48,7 +60,7 @@ void getCurrentSntpTime( SntpTimestamp_t *sntp ) {
     sntp->seconds = currentTime.tv_sec + SNTP_TIME_AT_UNIX_EPOCH_SECS;
     sntp->fractions = MILLISECONDS_TO_SNTP_FRACTIONS( currentTime.tv_nsec / 1000000 );
 }
-
+#endif
 
 /** Sntp Query deserializer
  * @param [in] buf - Input buffer
