@@ -180,10 +180,15 @@ void SNTP_Main(void)
         ssize_t receivedBytes = recvfrom(SNTP_Data.sockfd, netBuf, NET_BUF_SIZE, 0, (struct sockaddr*)&clientAddr, &clientLen);
 
         if (receivedBytes == NET_BUF_SIZE ) {
-            process_sntp_request(&clientAddr, clientLen);
+            SNTP_Data.cnts.SntpReqRcv++;
+            if (process_sntp_request(&clientAddr, clientLen) != SntpSuccess) {
+                SNTP_Data.cnts.SntpBadRequests++;
+            }
         } else if (receivedBytes > 0 ) {
+            SNTP_Data.cnts.SntpInvalidRequests++;
             OS_printf("ERROR: Invalid packet received of size %li\n", receivedBytes);
         } else if (receivedBytes < 0 && errno != ETIMEDOUT && errno != EAGAIN ) {
+            SNTP_Data.cnts.SntpInvalidRequests++;
             OS_printf("Unexpected recvfrom error: %li %i=%s\n", receivedBytes, errno, strerror(errno));
         } // else probable timeout
         
@@ -214,8 +219,7 @@ int32 SNTP_Init(void)
     /*
     ** Initialize app command execution counters
     */
-    SNTP_Data.CmdCounter = 0;
-    SNTP_Data.ErrCounter = 0;
+    memset(&SNTP_Data.cnts, 0, sizeof(SNTP_Data.cnts) );
 
     /*
     ** Initialize app configuration data
@@ -274,9 +278,19 @@ int32 SNTP_Init(void)
 
     SNTP_Data.sockfd = initUDPSocket(SNTP_PORT);
     
-    CFE_EVS_SendEvent(SNTP_STARTUP_INF_EID, CFE_EVS_EventType_INFORMATION, "SNTP App Initialized.%s",
-                      SNTP_VERSION_STRING);
-
+    CFE_EVS_SendEvent(SNTP_STARTUP_INF_EID, CFE_EVS_EventType_INFORMATION,
+                      "cFE SNTP Server %s Initialized at port %d, running as stratum %d and serving "
+#ifdef SNTP_USE_CFE_TIME
+                      "CFE UTC Time"
+#else
+                      "system time"
+#endif
+                      "\n",
+                      SNTP_VERSION_STRING,
+                      SNTP_PORT,
+                      SNTP_STRATUM
+        );
+    
     return (CFE_SUCCESS);
 
 } /* End of SNTP_Init() */
@@ -372,8 +386,7 @@ int32 SNTP_ReportHousekeeping(const CFE_MSG_CommandHeader_t *Msg)
     /*
     ** Get command execution counters...
     */
-    SNTP_Data.HkTlm.Payload.CommandErrorCounter = SNTP_Data.ErrCounter;
-    SNTP_Data.HkTlm.Payload.CommandCounter      = SNTP_Data.CmdCounter;
+    SNTP_Data.HkTlm.Payload = SNTP_Data.cnts;
 
     /*
     ** Send housekeeping telemetry packet...
@@ -394,7 +407,7 @@ int32 SNTP_ReportHousekeeping(const CFE_MSG_CommandHeader_t *Msg)
 int32 SNTP_Noop(const SNTP_NoopCmd_t *Msg)
 {
 
-    SNTP_Data.CmdCounter++;
+    SNTP_Data.cnts.CommandCounter++;
 
     CFE_EVS_SendEvent(SNTP_COMMANDNOP_INF_EID, CFE_EVS_EventType_INFORMATION, "SNTP: NOOP command %s",
                       SNTP_APP_VERSION);
@@ -413,9 +426,7 @@ int32 SNTP_Noop(const SNTP_NoopCmd_t *Msg)
 /* * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * *  * *  * * * * */
 int32 SNTP_ResetCounters(const SNTP_ResetCountersCmd_t *Msg)
 {
-
-    SNTP_Data.CmdCounter = 0;
-    SNTP_Data.ErrCounter = 0;
+    memset(&SNTP_Data.cnts, 0, sizeof(SNTP_Data.cnts) );
 
     CFE_EVS_SendEvent(SNTP_COMMANDRST_INF_EID, CFE_EVS_EventType_INFORMATION, "SNTP: RESET command");
 
@@ -452,7 +463,7 @@ bool SNTP_VerifyCmdLength(CFE_MSG_Message_t *MsgPtr, size_t ExpectedLength)
 
         result = false;
 
-        SNTP_Data.ErrCounter++;
+        SNTP_Data.cnts.CommandErrorCounter++;
     }
 
     return (result);

@@ -61,8 +61,7 @@ typedef struct
     /*
     ** Command interface counters...
     */
-    uint8 CmdCounter;
-    uint8 ErrCounter;
+    SNTP_HkTlm_Payload_t cnts;
 
     /*
     ** Housekeeping telemetry packet...

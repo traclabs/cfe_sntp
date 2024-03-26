@@ -62,7 +62,9 @@ typedef struct
 {
     uint8 CommandErrorCounter;
     uint8 CommandCounter;
-    uint8 spare[2];
+    uint16 SntpReqRcv;
+    uint16 SntpBadRequests;
+    uint16 SntpInvalidRequests;
 } SNTP_HkTlm_Payload_t;
 
 typedef struct

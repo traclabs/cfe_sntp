@@ -13,6 +13,13 @@ if (sntp_use_cfe_time)
   target_compile_definitions(sntp PUBLIC -DSNTP_USE_CFE_TIME)
 endif()
 
+# Declare target include directories (exported to other tarets)
+target_include_directories(ros_app PUBLIC
+    fsw/mission_inc
+    fsw/platform_inc
+    )
+
+
 # Include the public API from sample_lib to demonstrate how
 # to call library-provided functions
 #add_cfe_app_dependency(sntp sample_lib)
