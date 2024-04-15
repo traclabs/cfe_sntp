@@ -66,7 +66,7 @@ int initUDPSocket(uint32_t port) {
     struct sockaddr_in serverAddr;
     memset(&serverAddr, 0, sizeof(serverAddr));
     serverAddr.sin_family = AF_INET;
-    serverAddr.sin_port = htons(SNTP_PORT);
+    serverAddr.sin_port = htons(port);
     serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);
 
     if (bind(sockfd, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) < 0) {
@@ -277,6 +277,11 @@ int32 SNTP_Init(void)
     }
 
     SNTP_Data.sockfd = initUDPSocket(SNTP_PORT);
+    if (SNTP_Data.sockfd < 0)
+    {
+        CFE_ES_WriteToSysLog("SNTP App: Error initializing UDP socket\n");
+        return CFE_STATUS_EXTERNAL_RESOURCE_FAIL;        
+    }
     
     CFE_EVS_SendEvent(SNTP_STARTUP_INF_EID, CFE_EVS_EventType_INFORMATION,
                       "cFE SNTP Server %s Initialized at port %d, running as stratum %d and serving "
