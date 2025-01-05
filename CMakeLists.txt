@@ -14,7 +14,7 @@ if (sntp_use_cfe_time)
 endif()
 
 # Declare target include directories (exported to other tarets)
-target_include_directories(ros_app PUBLIC
+target_include_directories(sntp PUBLIC
     fsw/mission_inc
     fsw/platform_inc
     )
